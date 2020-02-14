@@ -78,6 +78,9 @@ public final class MetricsNames {
     public static final String SEGMENT_WRITE_BYTES = PREFIX + "segmentstore.segment.write_bytes";                       // Counter and Per-segment Counter
     public static final String SEGMENT_WRITE_EVENTS = PREFIX + "segmentstore.segment.write_events";                     // Counter and Per-segment Counter
 
+    // TODO: Validate it
+    public static final String SEGMENT_APPEND_BYTES_ADJUSTMENT = PREFIX + "segmentstore.segment.append_creation";
+
     // Table Segment stats
     public static final String TABLE_SEGMENT_UPDATE_LATENCY = PREFIX + "segmentstore.tablesegment.update_latency_ms";                         // Histogram
     public static final String TABLE_SEGMENT_UPDATE_CONDITIONAL_LATENCY = PREFIX + "segmentstore.tablesegment.update_conditional_latency_ms"; // Histogram

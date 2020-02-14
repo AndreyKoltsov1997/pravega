@@ -178,7 +178,10 @@ public class AppendProcessor extends DelegatingRequestProcessor {
         Preconditions.checkState(state != null, "Data from unexpected connection: Segment=%s, WriterId=%s.", append.getSegment(), id);
         long previousEventNumber = state.beginAppend(append.getEventNumber());
         int appendLength = append.getData().readableBytes();
+        // NOTE: Measuring outstanding byes adjustment in test purposes
+        Timer outstandingBytesTimer = new Timer();
         adjustOutstandingBytes(appendLength);
+        this.statsRecorder.recordOutstandingBytesAdjustment(append.getSegment(), appendLength, outstandingBytesTimer.getElapsed());
         Timer timer = new Timer();
         storeAppend(append, previousEventNumber)
                 .whenComplete((newLength, ex) -> {

@@ -33,13 +33,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.pravega.shared.MetricsNames.SEGMENT_CREATE_LATENCY;
-import static io.pravega.shared.MetricsNames.SEGMENT_READ_BYTES;
-import static io.pravega.shared.MetricsNames.SEGMENT_READ_LATENCY;
-import static io.pravega.shared.MetricsNames.SEGMENT_WRITE_BYTES;
-import static io.pravega.shared.MetricsNames.SEGMENT_WRITE_EVENTS;
-import static io.pravega.shared.MetricsNames.SEGMENT_WRITE_LATENCY;
-import static io.pravega.shared.MetricsNames.globalMetricName;
+import static io.pravega.shared.MetricsNames.*;
 import static io.pravega.shared.MetricsTags.segmentTags;
 
 @Slf4j
@@ -66,6 +60,8 @@ class SegmentStatsRecorderImpl implements SegmentStatsRecorder {
     private final OpStatsLogger writeStreamSegment = STATS_LOGGER.createStats(SEGMENT_WRITE_LATENCY);
     @Getter(AccessLevel.PROTECTED)
     private final DynamicLogger dynamicLogger = MetricsProvider.getDynamicLogger();
+    @Getter(AccessLevel.PROTECTED)
+    private final OpStatsLogger appendLogger = STATS_LOGGER.createStats(SEGMENT_APPEND_BYTES_ADJUSTMENT);
 
     private final Set<String> pendingCacheLoads;
     private final Cache<String, SegmentAggregates> cache;
@@ -218,6 +214,20 @@ class SegmentStatsRecorderImpl implements SegmentStatsRecorder {
                 log.warn("Record statistic for {} for data: {} and events:{} threw exception", streamSegmentName, dataLength, numOfEvents, e);
             }
         }
+    }
+
+    public void recordOutstandingBytesAdjustment(String streamSegmentName, long appendLength, Duration elapsed) {
+        getAppendLogger().reportSuccessEvent(elapsed);
+
+        DynamicLogger dl = getDynamicLogger();
+        dl.incCounterValue(globalMetricName(SEGMENT_APPEND_BYTES_ADJUSTMENT), appendLength);
+        try {
+            SegmentAggregates aggregates = getSegmentAggregate(streamSegmentName);
+            report(streamSegmentName, aggregates);
+        } catch (Exception e) {
+            log.warn("Record outstnading bytes adjustment for {},  data: {},  and events:{} threw exception", streamSegmentName, dataLength, numOfEvents, e);
+        }
+
     }
 
     /**
