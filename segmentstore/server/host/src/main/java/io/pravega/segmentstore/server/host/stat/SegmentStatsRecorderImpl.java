@@ -211,11 +211,12 @@ class SegmentStatsRecorderImpl implements SegmentStatsRecorder {
                     report(streamSegmentName, aggregates);
                 }
             } catch (Exception e) {
-                log.warn("Record statistic for {} for data: {} and events:{} threw exception {}", streamSegmentName, dataLength, numOfEvents, e);
+                log.error("Record statistic for {} for data: {} and events:{} threw exception {}", streamSegmentName, dataLength, numOfEvents, e);
             }
         }
     }
 
+    @Override
     public void recordOutstandingBytesAdjustment(String streamSegmentName, long appendLength, Duration elapsed) {
         getAppendLogger().reportSuccessEvent(elapsed);
 
@@ -225,7 +226,7 @@ class SegmentStatsRecorderImpl implements SegmentStatsRecorder {
             SegmentAggregates aggregates = getSegmentAggregate(streamSegmentName);
             report(streamSegmentName, aggregates);
         } catch (Exception e) {
-            log.warn("Record outstanding bytes adjustment for {},  data: {},  and events:{} threw exception", streamSegmentName, dataLength, numOfEvents, e);
+            log.error("Record outstanding bytes adjustment for {},  appendLength: {} threw exception", streamSegmentName, appendLength, e);
         }
     }
 
