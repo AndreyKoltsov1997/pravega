@@ -102,6 +102,10 @@ public interface SegmentStatsRecorder extends AutoCloseable {
             }
 
             @Override
+            public void recordOutstandingBytesAdjustment(String streamSegmentName, long appendLength, Duration elapsed) {
+            }
+
+            @Override
             public void sealSegment(String streamSegmentName) {
             }
 
