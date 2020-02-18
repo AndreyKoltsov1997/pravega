@@ -56,6 +56,8 @@ public interface SegmentStatsRecorder extends AutoCloseable {
      */
     void recordAppend(String streamSegmentName, long dataLength, int numOfEvents, Duration elapsed);
 
+    void recordOutstandingBytesAdjustment(String streamSegmentName, long appendLength, Duration elapsed);
+
     /**
      * Method to notify merge of transaction.
      *

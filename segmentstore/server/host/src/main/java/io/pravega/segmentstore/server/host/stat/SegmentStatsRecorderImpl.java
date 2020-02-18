@@ -211,7 +211,7 @@ class SegmentStatsRecorderImpl implements SegmentStatsRecorder {
                     report(streamSegmentName, aggregates);
                 }
             } catch (Exception e) {
-                log.warn("Record statistic for {} for data: {} and events:{} threw exception", streamSegmentName, dataLength, numOfEvents, e);
+                log.warn("Record statistic for {} for data: {} and events:{} threw exception {}", streamSegmentName, dataLength, numOfEvents, e);
             }
         }
     }
@@ -225,9 +225,8 @@ class SegmentStatsRecorderImpl implements SegmentStatsRecorder {
             SegmentAggregates aggregates = getSegmentAggregate(streamSegmentName);
             report(streamSegmentName, aggregates);
         } catch (Exception e) {
-            log.warn("Record outstnading bytes adjustment for {},  data: {},  and events:{} threw exception", streamSegmentName, dataLength, numOfEvents, e);
+            log.warn("Record outstanding bytes adjustment for {},  data: {},  and events:{} threw exception", streamSegmentName, dataLength, numOfEvents, e);
         }
-
     }
 
     /**
