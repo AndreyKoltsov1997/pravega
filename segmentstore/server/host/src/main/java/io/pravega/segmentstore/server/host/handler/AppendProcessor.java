@@ -133,6 +133,8 @@ public class AppendProcessor extends DelegatingRequestProcessor {
      */
     @Override
     public void setupAppend(SetupAppend setupAppend) {
+        // NOTE: Append setup has began
+        // 1. Segment verification begins
         String newSegment = setupAppend.getSegment();
         UUID writer = setupAppend.getWriterId();
         log.info("Setting up appends for writer: {} on segment: {}", writer, newSegment);
@@ -142,6 +144,7 @@ public class AppendProcessor extends DelegatingRequestProcessor {
                 tokenVerifier.verifyToken(newSegment,
                         setupAppend.getDelegationToken(),
                         AuthHandler.Permissions.READ_UPDATE);
+                // 1. Segment verification ends
             } catch (TokenException e) {
                 handleException(setupAppend.getWriterId(), setupAppend.getRequestId(), newSegment,
                         "Update Segment Attribute", e);
@@ -160,6 +163,7 @@ public class AppendProcessor extends DelegatingRequestProcessor {
                             long eventNumber = attributes.getOrDefault(writer, Attributes.NULL_ATTRIBUTE_VALUE);
                             this.writerStates.putIfAbsent(Pair.of(newSegment, writer), new WriterState(eventNumber));
                             connection.send(new AppendSetup(setupAppend.getRequestId(), newSegment, writer, eventNumber));
+                            // NOTE: Append set up has successfully finished
                         }
                     } catch (Throwable e) {
                         handleException(writer, setupAppend.getRequestId(), newSegment, "handling setupAppend result", e);
@@ -176,7 +180,7 @@ public class AppendProcessor extends DelegatingRequestProcessor {
         UUID id = append.getWriterId();
         WriterState state = this.writerStates.get(Pair.of(append.getSegment(), id));
         Preconditions.checkState(state != null, "Data from unexpected connection: Segment=%s, WriterId=%s.", append.getSegment(), id);
-        long previousEventNumber = state.beginAppend(append.getEventNumber());
+        long previousEventNumber = state.beginAppend(append.getEventNumber()); // Update in-flight requests counter
         int appendLength = append.getData().readableBytes();
         // NOTE: Measuring outstanding byes adjustment in test purposes
         Timer outstandingBytesTimer = new Timer();
@@ -200,10 +204,12 @@ public class AppendProcessor extends DelegatingRequestProcessor {
     }
 
     private CompletableFuture<Long> storeAppend(Append append, long lastEventNumber) {
+        // Construction of attributes that'd be updated once append finishes
         List<AttributeUpdate> attributes = Arrays.asList(
                 new AttributeUpdate(append.getWriterId(), AttributeUpdateType.ReplaceIfEquals, append.getEventNumber(), lastEventNumber),
                 new AttributeUpdate(EVENT_COUNT, AttributeUpdateType.Accumulate, append.getEventCount()));
-        ByteBufWrapper buf = new ByteBufWrapper(append.getData());
+        ByteBufWrapper buf = new ByteBufWrapper(append.getData()); // Wrapper that allows RO-operations
+        // Send append request to the store. Append will be performed with given segment and the related length.
         if (append.isConditional()) {
             return store.append(append.getSegment(), append.getExpectedLength(), buf, attributes, TIMEOUT);
         } else {

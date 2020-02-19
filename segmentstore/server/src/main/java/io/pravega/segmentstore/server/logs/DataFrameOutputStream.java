@@ -63,6 +63,7 @@ class DataFrameOutputStream extends OutputStream {
     //region OutputStream Implementation
 
     @Override
+    // Constructs a a new data frame and write it.
     public void write(int b) throws IOException {
         Exceptions.checkNotClosed(this.closed, this);
         Preconditions.checkState(this.currentFrame != null, "No current frame exists. Most likely no record is started.");
