@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static io.pravega.shared.MetricsTags.containerTag;
+import static io.pravega.shared.MetricsTags.streamTags;
 
 /**
  * General Metrics for the SegmentStore.
@@ -405,6 +406,33 @@ public final class SegmentStoreMetrics {
      */
     public static void recoveryCompleted(long duration, int containerId) {
         DYNAMIC_LOGGER.reportGaugeValue(MetricsNames.CONTAINER_RECOVERY_TIME, duration, containerTag(containerId));
+    }
+
+    //endregion
+
+    //region DataFrame
+
+    /**
+     * Data Frame Operations related metrics.
+     */
+    public final static class DataFrameBuilder implements AutoCloseable {
+        private final OpStatsLogger dataFrameBuilderAppend;
+
+
+        public DataFrameBuilder(final String targetLogString) {
+            this.dataFrameBuilderAppend = STATS_LOGGER.createStats(MetricsNames.DATA_FRAME_TEST_METRIC, targetLogString);
+        }
+
+        public void recordAppend(Duration elapsed) { this.dataFrameBuilderAppend.reportSuccessEvent(elapsed); }
+
+//        public void processOperations(int batchSize, long millis) {
+//            this.processOperationsBatchSize.reportSuccessValue(batchSize);
+//            this.processOperationsLatency.reportSuccessValue(millis);
+//        }
+        @Override
+        public void close() throws Exception {
+            this.dataFrameBuilderAppend.close();
+        }
     }
 
     //endregion

@@ -12,7 +12,9 @@ package io.pravega.segmentstore.server.logs;
 import com.google.common.base.Preconditions;
 import io.pravega.common.Exceptions;
 import io.pravega.common.ObjectClosedException;
+import io.pravega.common.Timer;
 import io.pravega.common.util.SequencedItemList;
+import io.pravega.segmentstore.server.SegmentStoreMetrics;
 import io.pravega.segmentstore.server.logs.operations.CompletableOperation;
 import io.pravega.segmentstore.storage.DurableDataLog;
 import io.pravega.segmentstore.storage.LogAddress;
@@ -48,6 +50,8 @@ class DataFrameBuilder<T extends SequencedItemList.Element> implements AutoClose
     private long lastSerializedSequenceNumber;
     private long lastStartedSequenceNumber;
     private final AtomicReference<Throwable> failureCause;
+    // NOTE: Experiments with metrics
+    private final SegmentStoreMetrics.DataFrameBuilder metrics;
 
     //endregion
 
@@ -73,6 +77,7 @@ class DataFrameBuilder<T extends SequencedItemList.Element> implements AutoClose
         this.lastStartedSequenceNumber = -1;
         this.failureCause = new AtomicReference<>();
         this.closed = new AtomicBoolean();
+        this.metrics = new SegmentStoreMetrics.DataFrameBuilder(this.targetLog.toString());
     }
 
     //endregion
@@ -127,6 +132,7 @@ class DataFrameBuilder<T extends SequencedItemList.Element> implements AutoClose
      * @throws ObjectClosedException If the DataFrameBuilder is closed (or in in a failed state) and cannot be used anymore.
      */
     void append(T logItem) throws IOException {
+        Timer appendTimer = new Timer();
         Exceptions.checkNotClosed(this.closed.get(), this);
         long seqNo = logItem.getSequenceNumber();
         Exceptions.checkArgument(this.lastSerializedSequenceNumber < seqNo, "logItem",
@@ -145,6 +151,8 @@ class DataFrameBuilder<T extends SequencedItemList.Element> implements AutoClose
             // Indicate to the output stream that have finished writing the record.
             this.outputStream.endRecord();
             this.lastSerializedSequenceNumber = seqNo;
+            // NOTE: Recording append in test purposes
+            this.metrics.recordAppend(appendTimer.getElapsed());
         } catch (Exception ex) {
             if (this.closed.get()) {
                 // It's possible that an async callback resulted in an error and this object got closed after the check

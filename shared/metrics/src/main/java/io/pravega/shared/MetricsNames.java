@@ -229,6 +229,9 @@ public final class MetricsNames {
     // Zookeeper connectivity metrics
     public static final String CONTROLLER_ZK_SESSION_EXPIRATION = PREFIX + "controller.zookeeper.session_expiration";  // Counter
 
+    // Data Frame metrics
+    public static final String DATA_FRAME_TEST_METRIC = PREFIX + "dataframe.append_operation";
+
     public static String globalMetricName(String stringName) {
         return stringName + "_global";
     }
