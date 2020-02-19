@@ -874,7 +874,7 @@ class StreamSegmentContainer extends AbstractService implements SegmentContainer
         private final long segmentId;
 
         @Override
-        public CompletableFuture<Long> new StreamSegmentAppendOperation(BufferView data, Collection<AttributeUpdate> attributeUpdates, Duration timeout) {
+        public CompletableFuture<Long> append(BufferView data, Collection<AttributeUpdate> attributeUpdates, Duration timeout) {
             ensureRunning();
             logRequest("append", this.segmentId, data.getLength());
             StreamSegmentAppendOperation operation = new StreamSegmentAppendOperation(this.segmentId, data, attributeUpdates);
