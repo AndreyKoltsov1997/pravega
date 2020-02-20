@@ -51,7 +51,7 @@ class DataFrameBuilder<T extends SequencedItemList.Element> implements AutoClose
     private long lastStartedSequenceNumber;
     private final AtomicReference<Throwable> failureCause;
     // NOTE: Experiments with metrics
-    private final SegmentStoreMetrics.DataFrameBuilder metrics;
+    private final SegmentStoreMetrics.DataFrameBuilderMetrics metrics;
 
     //endregion
 
@@ -77,7 +77,7 @@ class DataFrameBuilder<T extends SequencedItemList.Element> implements AutoClose
         this.lastStartedSequenceNumber = -1;
         this.failureCause = new AtomicReference<>();
         this.closed = new AtomicBoolean();
-        this.metrics = new SegmentStoreMetrics.DataFrameBuilder(this.targetLog.toString());
+        this.metrics = new SegmentStoreMetrics.DataFrameBuilderMetrics("test target log");
     }
 
     //endregion

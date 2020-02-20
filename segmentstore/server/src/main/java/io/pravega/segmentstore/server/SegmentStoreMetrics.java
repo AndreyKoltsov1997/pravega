@@ -415,20 +415,16 @@ public final class SegmentStoreMetrics {
     /**
      * Data Frame Operations related metrics.
      */
-    public final static class DataFrameBuilder implements AutoCloseable {
+    public final static class DataFrameBuilderMetrics implements AutoCloseable {
         private final OpStatsLogger dataFrameBuilderAppend;
 
 
-        public DataFrameBuilder(final String targetLogString) {
+        public DataFrameBuilderMetrics(final String targetLogString) {
             this.dataFrameBuilderAppend = STATS_LOGGER.createStats(MetricsNames.DATA_FRAME_TEST_METRIC, targetLogString);
         }
 
         public void recordAppend(Duration elapsed) { this.dataFrameBuilderAppend.reportSuccessEvent(elapsed); }
 
-//        public void processOperations(int batchSize, long millis) {
-//            this.processOperationsBatchSize.reportSuccessValue(batchSize);
-//            this.processOperationsLatency.reportSuccessValue(millis);
-//        }
         @Override
         public void close() throws Exception {
             this.dataFrameBuilderAppend.close();
