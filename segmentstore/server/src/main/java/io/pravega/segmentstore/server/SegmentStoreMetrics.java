@@ -420,7 +420,8 @@ public final class SegmentStoreMetrics {
 
 
         public DataFrameBuilderMetrics(final String targetLogString) {
-            this.dataFrameBuilderAppend = STATS_LOGGER.createStats(MetricsNames.DATA_FRAME_TEST_METRIC, targetLogString);
+            final String[] dataFrameBuilderTag =  new String[] {"DATA_FRAME_BUIDLER", targetLogString};
+            this.dataFrameBuilderAppend = STATS_LOGGER.createStats(MetricsNames.DATA_FRAME_TEST_METRIC, dataFrameBuilderTag);
         }
 
         public void recordAppend(Duration elapsed) { this.dataFrameBuilderAppend.reportSuccessEvent(elapsed); }
