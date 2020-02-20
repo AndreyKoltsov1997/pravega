@@ -147,11 +147,10 @@ class SegmentStoreAdapter extends StoreAdapter {
 
     @Override
     protected void startUp() throws Exception {
-        if (this.config.isMetricsEnabled()) {
-            MetricsProvider.initialize(this.builderConfig.getConfig(MetricsConfig::builder));
-            this.statsProvider = MetricsProvider.getMetricsProvider();
-            this.statsProvider.start();
-        }
+        // NOTE: Enable metrics in order to test in standalone.
+        MetricsProvider.initialize(this.builderConfig.getConfig(MetricsConfig::builder));
+        this.statsProvider = MetricsProvider.getMetricsProvider();
+        this.statsProvider.start();
 
         if (this.config.getBookieCount() > 0) {
             this.bookKeeperService = BookKeeperAdapter.startBookKeeperOutOfProcess(this.config, this.logId);
