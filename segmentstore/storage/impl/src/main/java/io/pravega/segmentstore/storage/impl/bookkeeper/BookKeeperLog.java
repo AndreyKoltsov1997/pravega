@@ -48,6 +48,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+
+import io.pravega.shared.MetricsNames;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -618,6 +620,7 @@ class BookKeeperLog implements DurableDataLog {
     private void completeWrite(Write write) {
         Timer t = write.complete();
         if (t != null) {
+            log.info("{} for given iteration:  length - {}, time - {}", MetricsNames.BK_WRITE_BYTES, write.data.getLength(), t.getElapsed());
             this.metrics.bookKeeperWriteCompleted(write.data.getLength(), t.getElapsed());
         }
     }
