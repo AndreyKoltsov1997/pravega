@@ -247,12 +247,12 @@ public class ControllerServiceStarter extends AbstractIdleService {
             Duration executionDurationWatermarking = Duration.ofSeconds(Config.MINIMUM_WATERMARKING_FREQUENCY_IN_SECONDS);
             PeriodicWatermarking watermarkingWork = new PeriodicWatermarking(streamStore, bucketStore,
                     clientConfig, watermarkingExecutor);
-            watermarkingService = bucketServiceFactory.createWatermarkingService(executionDurationWatermarking, 
+            watermarkingService = bucketServiceFactory.createWatermarkingService(executionDurationWatermarking,
                     watermarkingWork::watermark, watermarkingExecutor);
 
             log.info("starting background periodic service for watermarking");
-            watermarkingService.startAsync();
-            watermarkingService.awaitRunning();
+//            watermarkingService.startAsync();
+//            watermarkingService.awaitRunning();
 
             // Controller has a mechanism to track the currently active controller host instances. On detecting a failure of
             // any controller instance, the failure detector stores the failed HostId in a failed hosts directory (FH), and
