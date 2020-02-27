@@ -106,6 +106,7 @@ public class PeriodicWatermarking {
     public CompletableFuture<Void> watermark(Stream stream) {
         String scope = stream.getScope();
         String streamName = stream.getStreamName();
+        log.info("A new watermark has been created for stream {} in scope {}", streamName, scope);
         OperationContext context = streamMetadataStore.createContext(scope, streamName);
 
         if (scope.equals(NameUtils.INTERNAL_SCOPE_NAME)) {
