@@ -769,6 +769,7 @@ class BookKeeperLog implements DurableDataLog {
         try {
             Stat storingStatIn = new Stat();
             byte[] serializedMetadata = this.zkClient.getData().storingStatIn(storingStatIn).forPath(this.logNodePath);
+            log.info("Metadata is going to be loaded into the log. Its length is - {}", serializedMetadata.length);
             LogMetadata result = LogMetadata.SERIALIZER.deserialize(serializedMetadata);
             result.withUpdateVersion(storingStatIn.getVersion());
             return result;
@@ -839,6 +840,8 @@ class BookKeeperLog implements DurableDataLog {
     private void persistMetadata(LogMetadata metadata, boolean create) throws DurableDataLogException {
         try {
             byte[] serializedMetadata = LogMetadata.SERIALIZER.serialize(metadata).getCopy();
+            log.info("Metadata is going to be persisted into ZooKeeper. Its length is - {}", serializedMetadata.length);
+
             Stat result;
             if (create) {
                 result = new Stat();
