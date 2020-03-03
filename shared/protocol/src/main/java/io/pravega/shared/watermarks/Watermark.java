@@ -15,6 +15,7 @@ import io.pravega.common.ObjectBuilder;
 import io.pravega.common.io.serialization.RevisionDataInput;
 import io.pravega.common.io.serialization.RevisionDataOutput;
 import io.pravega.common.io.serialization.VersionedSerializer;
+import io.pravega.common.tracing.TagLogger;
 import io.pravega.common.util.ByteArraySegment;
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -24,6 +25,7 @@ import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
 import lombok.SneakyThrows;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a serializable Watermark. 
@@ -37,6 +39,8 @@ import lombok.SneakyThrows;
  */
 @Data
 public class Watermark {
+    private static final TagLogger log = new TagLogger(LoggerFactory.getLogger(Watermark.class));
+
     public static final WatermarkSerializer SERIALIZER = new WatermarkSerializer();
     public static final Watermark EMPTY = new Watermark(Long.MIN_VALUE, Long.MIN_VALUE, ImmutableMap.of());
     private final long lowerTimeBound;
@@ -88,6 +92,7 @@ public class Watermark {
         }
         
         private void write00(Watermark watermark, RevisionDataOutput revisionDataOutput) throws IOException {
+            log.info("Watermark has been written with upper bound {} and lower bound {}", watermark.upperTimeBound, watermark.lowerTimeBound);
             revisionDataOutput.writeLong(watermark.lowerTimeBound);
             revisionDataOutput.writeLong(watermark.upperTimeBound);
             revisionDataOutput.writeMap(watermark.streamCut, SegmentWithRange.SERIALIZER::serialize, DataOutput::writeLong);

@@ -12,7 +12,7 @@ zookeeper_data_dir: "/var/lib/zookeeper"
 zookeeper_maxClientCnxns: 200
 
 # The number of milliseconds of each tick
-zookeeper_tickTime: 2000
+zookeeper_tickTime: 5000 # TODO: PUT BACK 2000
 
 # The number of ticks that the initial
 # synchronization phase can take

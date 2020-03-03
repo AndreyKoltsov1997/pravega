@@ -181,15 +181,15 @@ public class ClientFactoryImpl implements EventStreamClientFactory, Synchronizer
         ReaderGroupStateManager stateManager = new ReaderGroupStateManager(readerId, sync, controller, nanoTime);
         stateManager.initializeReader(config.getInitialAllocationDelay());
         Builder<Stream, WatermarkReaderImpl> watermarkReaders = ImmutableMap.builder();
-        if (!config.isDisableTimeWindows()) {
-            for (Stream stream : stateManager.getStreams()) {
-                String streamName = NameUtils.getMarkStreamForStream(stream.getStreamName());
-                val client = createRevisionedStreamClient(getSegmentForRevisionedClient(stream.getScope(), streamName),
-                                                          new WatermarkSerializer(),
-                                                          SynchronizerConfig.builder().readBufferSize(4096).build());
-                watermarkReaders.put(stream, new WatermarkReaderImpl(stream, client, watermarkReaderThreads));
-            }
-        }
+//        if (!config.isDisableTimeWindows()) {
+//            for (Stream stream : stateManager.getStreams()) {
+//                String streamName = NameUtils.getMarkStreamForStream(stream.getStreamName());
+//                val client = createRevisionedStreamClient(getSegmentForRevisionedClient(stream.getScope(), streamName),
+//                                                          new WatermarkSerializer(),
+//                                                          SynchronizerConfig.builder().readBufferSize(4096).build());
+//                watermarkReaders.put(stream, new WatermarkReaderImpl(stream, client, watermarkReaderThreads));
+//            }
+//        }
         return new EventStreamReaderImpl<T>(inFactory, metaFactory, s, stateManager, new Orderer(),
                 milliTime, config, watermarkReaders.build(), controller);
     }
