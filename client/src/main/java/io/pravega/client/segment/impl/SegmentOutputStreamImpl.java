@@ -472,6 +472,7 @@ class SegmentOutputStreamImpl implements SegmentOutputStream {
                 Append append = new Append(segmentName, writerId, eventNumber, 1, event.getData(), null, requestId);
                 log.trace("Sending append request: {}", append);
                 connection.send(append);
+                log.info("Append request has been sent. Segment name - {}, length: {}, writer ID - {}", segmentName, event.getData().readableBytes(), writerId);
             } catch (ConnectionFailedException e) {
                 log.warn("Failed writing event through writer " + writerId + "due to: ", e);
                 reconnect(); // As the message is inflight, this will perform the retransmission.
