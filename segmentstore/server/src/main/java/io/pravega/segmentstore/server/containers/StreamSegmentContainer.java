@@ -354,7 +354,7 @@ class StreamSegmentContainer extends AbstractService implements SegmentContainer
         return this.metadataStore.getOrAssignSegmentId(streamSegmentName, timer.getRemaining(),
                 streamSegmentId -> {
                     val operation = new StreamSegmentAppendOperation(streamSegmentId, data, attributeUpdates);
-                    log.info("Append Request: stream segment ID: {}, Container ID: {}", streamSegmentId, this.metadata.getContainerId());
+                    log.info("Append Request: stream segment name: {}, Container ID: {}", streamSegmentName, this.metadata.getContainerId());
                     return processAppend(operation, timer).thenApply(v -> operation.getLastStreamSegmentOffset());
                 });
     }
@@ -369,7 +369,7 @@ class StreamSegmentContainer extends AbstractService implements SegmentContainer
         return this.metadataStore.getOrAssignSegmentId(streamSegmentName, timer.getRemaining(),
                 streamSegmentId -> {
                     val operation = new StreamSegmentAppendOperation(streamSegmentId, offset, data, attributeUpdates);
-                    log.info("Append Request with offset: stream segment ID: {}, Container ID: {}", streamSegmentId, this.metadata.getContainerId());
+                    log.info("Append Request with offset: stream segment name: {}, Container ID: {}", streamSegmentName, this.metadata.getContainerId());
                     return processAppend(operation, timer).thenApply(v -> operation.getLastStreamSegmentOffset());
                 });
     }
