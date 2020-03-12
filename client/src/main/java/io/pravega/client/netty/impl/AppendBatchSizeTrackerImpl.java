@@ -76,8 +76,10 @@ class AppendBatchSizeTrackerImpl implements AppendBatchSizeTracker {
         double appendsInMaxBatch = Math.max(1.0, MAX_BATCH_TIME_MILLIS / millisBetweenAppends.getCurrentValue());
         double targetAppendsOutstanding = MathHelpers.minMax(appendsOutstanding.getCurrentValue() * 0.5, 1.0,
                                                              appendsInMaxBatch);
-        return (int) MathHelpers.minMax((long) (targetAppendsOutstanding * eventSize.getCurrentValue()), 0,
-                                        MAX_BATCH_SIZE);
+        final int appendBlockSize = (int) MathHelpers.minMax((long) (targetAppendsOutstanding * eventSize.getCurrentValue()), 0,
+                MAX_BATCH_SIZE);
+        log.info("Current append block size: {}", appendBlockSize);
+        return appendBlockSize;
     }
 
     @Override
