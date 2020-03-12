@@ -12,6 +12,8 @@ package io.pravega.client.netty.impl;
 import io.pravega.common.ExponentialMovingAverage;
 import io.pravega.common.MathHelpers;
 import io.pravega.shared.protocol.netty.AppendBatchSizeTracker;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
@@ -27,6 +29,7 @@ import java.util.function.Supplier;
  * synchronous writers. Otherwise the batch size is set to the amount of data that will be written in the next
  * {@link #MAX_BATCH_TIME_MILLIS} or half the server round trip time (whichever is less)
  */
+@Slf4j
 class AppendBatchSizeTrackerImpl implements AppendBatchSizeTracker {
     private static final int MAX_BATCH_TIME_MILLIS = 100;
 
